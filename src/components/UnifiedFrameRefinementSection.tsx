@@ -8,6 +8,7 @@ import {
 } from "../data/refinements";
 import { EdgeNetWordmark } from "./EdgeNetLogos";
 import { RefinedConceptSymbol } from "./RefinedUnifiedFrameLogos";
+import { ServerRackMockup3D } from "./ServerRackMockup3D";
 import { downloadSvgFile, svgStringToPngBase64 } from "../utils/exportBoard";
 import {
   buildRefinementComparisonSvg,
@@ -452,6 +453,9 @@ export const UnifiedFrameRefinementSection: React.FC<
           );
         })}
       </div>
+
+      {/* High-Fidelity 3D Brushed-Metal Server Rack Engraving Mockup */}
+      <ServerRackMockup3D lang={lang} />
 
       {/* Comparison Summary (Strengths & Trade-offs — No Winner Declared) */}
       <div className="bg-white border border-[#D8E2EC] rounded-sm p-6 lg:px-8 lg:py-6 space-y-5">

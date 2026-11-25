@@ -53,6 +53,16 @@ export const REFINEMENT_UI = {
     navRefinement: "Refinement",
     navOriginal: "Original Board",
     mockupBtn: "Mockup in Studio",
+    rack3dTitle: "3D Server Rack Engraving Mockup",
+    rack3dSubtitle:
+      "Interactive 2U enterprise rack-blade simulation with brushed black aluminum, CSS depth filters, and hover light-glint transitions.",
+    rackFinishBlack: "Anodized Black",
+    rackFinishTitanium: "Anodized Titanium",
+    rackFinishSlate: "Deep Slate Alloy",
+    rackAngleIso: "Isometric 3D",
+    rackAngleFront: "Front Elevation",
+    rackAngleBevel: "Right Bevel",
+    rackChassisSpec: "2U AI Inference Blade · CNC Anodized Faceplate · Laser Anneal 0.15mm",
   },
   ko: {
     sectionTitle: "유니파이드 프레임 고도화 탐색",
@@ -85,6 +95,16 @@ export const REFINEMENT_UI = {
     navRefinement: "심화 비교",
     navOriginal: "초기 탐색 보드",
     mockupBtn: "스튜디오 목업",
+    rack3dTitle: "3D 서버 랙 메탈 각인 목업",
+    rack3dSubtitle:
+      "블랙 아노다이징 알루미늄 질감과 호버 시 3D 틸트·광택 전환 효과를 적용한 2U 엔터프라이즈 서버 랙 목업입니다.",
+    rackFinishBlack: "블랙 알루미늄",
+    rackFinishTitanium: "아노다이징 티타늄",
+    rackFinishSlate: "딥 슬레이트 합금",
+    rackAngleIso: "아이소메트릭 3D",
+    rackAngleFront: "정면 뷰",
+    rackAngleBevel: "우측 베벨",
+    rackChassisSpec: "2U AI 추론 블레이드 · CNC 브러시드 알루미늄 패널 · 0.15mm 레이저 각인",
   },
 } as const;
 
