@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { Language } from "../data/concepts";
 import { REFINEMENT_SPECS, REFINEMENT_UI, RefinementId } from "../data/refinements";
 import { RefinedConceptSymbol } from "./RefinedUnifiedFrameLogos";
-import {
-  RACK_FINISH_OPTIONS,
-  RackFinish,
-  RackFinishSwitcher,
-} from "./RackFinishSwitcher";
+import { RackFinish, RackFinishSwitcher } from "./RackFinishSwitcher";
 
 type RackAngle = "iso" | "front" | "bevel";
 
@@ -17,7 +13,7 @@ interface ServerRackMockup3DProps {
 export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) => {
   const ui = REFINEMENT_UI[lang];
   const [selectedId, setSelectedId] = useState<RefinementId>("minimal");
-  const [finish, setFinish] = useState<RackFinish>("black");
+  const [rackFinish, setRackFinish] = useState<RackFinish>("rack-metal-brushed-black");
   const [angle, setAngle] = useState<RackAngle>("iso");
 
   const activeSpec =
@@ -31,36 +27,34 @@ export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) 
       ? "rack-angle-front"
       : "rack-angle-bevel";
 
-  const activeFinishOption =
-    RACK_FINISH_OPTIONS.find((item) => item.id === finish) ?? RACK_FINISH_OPTIONS[0];
-  const surfaceClass = activeFinishOption.cssClass;
-
   const depthClass =
-    finish === "black"
+    rackFinish === "rack-metal-brushed-black"
       ? "rack-depth-edge-black"
-      : finish === "titanium"
+      : rackFinish === "rack-metal-titanium"
       ? "rack-depth-edge-titanium"
       : "rack-depth-edge-slate";
 
   const engravedFilterClass =
-    finish === "black"
+    rackFinish === "rack-metal-brushed-black"
       ? "rack-engraved-brushed-black"
-      : finish === "titanium"
+      : rackFinish === "rack-metal-titanium"
       ? "rack-engraved-titanium"
       : "rack-engraved-slate";
 
-  const isLightMetal = finish === "titanium";
-  const isBrushedBlack = finish === "black";
+  const isLightMetal = rackFinish === "rack-metal-titanium";
+  const isBrushedBlack = rackFinish === "rack-metal-brushed-black";
 
   return (
-    <div className="bg-white border border-[#D8E2EC] rounded-sm overflow-hidden">
+    <div className="bg-white dark:bg-[#101D32] border border-[#D8E2EC] dark:border-[#213350] rounded-sm overflow-hidden transition-colors duration-200">
       {/* Control Header */}
-      <div className="px-6 lg:px-8 py-4 bg-[#F8FAFC] border-b border-[#E8EEF4] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="px-6 lg:px-8 py-4 bg-[#F8FAFC] dark:bg-[#0D182A] border-b border-[#E8EEF4] dark:border-[#1E2F4A] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h3 className="font-display text-base font-semibold text-[#101E35]">
+          <h3 className="font-display text-base font-semibold text-[#101E35] dark:text-white">
             {ui.rack3dTitle}
           </h3>
-          <p className="text-xs text-[#303B49] mt-0.5">{ui.rack3dSubtitle}</p>
+          <p className="text-xs text-[#303B49] dark:text-[#A8B8CD] mt-0.5">
+            {ui.rack3dSubtitle}
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -68,7 +62,7 @@ export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) 
           <div
             role="group"
             aria-label="Logo Refinement Version"
-            className="inline-flex items-center gap-1 p-1 bg-[#E8EEF4]/70 rounded-lg"
+            className="inline-flex items-center gap-1 p-1 bg-[#E8EEF4]/70 dark:bg-[#16253E] rounded-lg"
           >
             {REFINEMENT_SPECS.map((spec) => (
               <button
@@ -78,8 +72,8 @@ export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) 
                 aria-pressed={selectedId === spec.id}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB] ${
                   selectedId === spec.id
-                    ? "bg-white text-[#101E35] shadow-xs"
-                    : "text-[#303B49] hover:text-[#101E35]"
+                    ? "bg-white dark:bg-[#101E35] text-[#101E35] dark:text-white shadow-xs"
+                    : "text-[#303B49] dark:text-[#A8B8CD] hover:text-[#101E35] dark:hover:text-white"
                 }`}
               >
                 {spec[lang].versionTag}
@@ -88,13 +82,17 @@ export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) 
           </div>
 
           {/* Brushed Metal Finish Switcher */}
-          <RackFinishSwitcher finish={finish} onChange={setFinish} lang={lang} />
+          <RackFinishSwitcher
+            rackFinish={rackFinish}
+            onChange={setRackFinish}
+            lang={lang}
+          />
 
           {/* 3D Angle Selector */}
           <div
             role="group"
             aria-label="3D Viewing Angle"
-            className="inline-flex items-center gap-1 p-1 bg-[#E8EEF4]/70 rounded-lg"
+            className="inline-flex items-center gap-1 p-1 bg-[#E8EEF4]/70 dark:bg-[#16253E] rounded-lg"
           >
             {(
               [
@@ -110,8 +108,8 @@ export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) 
                 aria-pressed={angle === opt.key}
                 className={`px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB] ${
                   angle === opt.key
-                    ? "bg-white text-[#101E35] shadow-xs"
-                    : "text-[#303B49] hover:text-[#101E35]"
+                    ? "bg-white dark:bg-[#101E35] text-[#101E35] dark:text-white shadow-xs"
+                    : "text-[#303B49] dark:text-[#A8B8CD] hover:text-[#101E35] dark:hover:text-white"
                 }`}
               >
                 {opt.label}
@@ -126,7 +124,7 @@ export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) 
         <div className={`rack-3d-chassis w-full max-w-[920px] relative ${angleClass}`}>
           {/* Main 2U Brushed Metal Server Rack Faceplate */}
           <div
-            className={`rack-faceplate relative rounded-[4px] border overflow-hidden ${surfaceClass} ${
+            className={`rack-faceplate relative rounded-[4px] border overflow-hidden ${rackFinish} ${
               isBrushedBlack
                 ? "border-[#4A5362]/85"
                 : isLightMetal
@@ -268,9 +266,9 @@ export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) 
             {/* Subtle Machined Lower Chamfer Accent */}
             <div
               className={`h-[3px] w-full transition-colors duration-300 ${
-                finish === "black"
+                rackFinish === "rack-metal-brushed-black"
                   ? "bg-[#147DAB]/75"
-                  : finish === "titanium"
+                  : rackFinish === "rack-metal-titanium"
                   ? "bg-[#147DAB]/65"
                   : "bg-[#3F8F6B]/70"
               }`}
@@ -293,7 +291,7 @@ export const ServerRackMockup3D: React.FC<ServerRackMockup3DProps> = ({ lang }) 
           <span className="text-[#9FB0C4]/50" aria-hidden="true">
             ·
           </span>
-          <span className="font-mono text-[11px]">.{surfaceClass}</span>
+          <span className="font-mono text-[11px]">.{rackFinish}</span>
           <span className="text-[#9FB0C4]/50" aria-hidden="true">
             ·
           </span>

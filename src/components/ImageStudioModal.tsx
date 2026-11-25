@@ -195,30 +195,30 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#101E35]/65 backdrop-blur-[2px] p-4 md:p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#101E35]/65 dark:bg-black/75 backdrop-blur-[2px] p-4 md:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="studio-title"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-5xl bg-white border border-[#E8EEF4] rounded-xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
+        className="w-full max-w-5xl bg-white dark:bg-[#101D32] border border-[#E8EEF4] dark:border-[#213350] rounded-xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8EEF4] bg-[#F8FAFC]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8EEF4] dark:border-[#1E2F4A] bg-[#F8FAFC] dark:bg-[#0D182A]">
           <div className="flex items-center gap-3">
-            <h2 id="studio-title" className="font-display text-base font-semibold text-[#101E35]">
+            <h2 id="studio-title" className="font-display text-base font-semibold text-[#101E35] dark:text-white">
               {copy.studioTitle}
             </h2>
-            <span className="text-[#303B49]/40" aria-hidden="true">·</span>
-            <span className="font-mono text-xs text-[#303B49]">gemini-nano-banana-2.1</span>
+            <span className="text-[#303B49]/40 dark:text-white/25" aria-hidden="true">·</span>
+            <span className="font-mono text-xs text-[#303B49] dark:text-[#A8B8CD]">gemini-nano-banana-2.1</span>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="p-2 text-[#303B49] hover:text-[#101E35] hover:bg-[#E8EEF4]/60 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
+            className="p-2 text-[#303B49] dark:text-[#A8B8CD] hover:text-[#101E35] dark:hover:text-white hover:bg-[#E8EEF4]/60 dark:hover:bg-[#1A2D49] rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -229,19 +229,19 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
           {/* Left Form Panel */}
           <form
             onSubmit={handleGenerate}
-            className="lg:col-span-5 p-6 border-b lg:border-b-0 lg:border-r border-[#E8EEF4] space-y-5 bg-white"
+            className="lg:col-span-5 p-6 border-b lg:border-b-0 lg:border-r border-[#E8EEF4] dark:border-[#1E2F4A] space-y-5 bg-white dark:bg-[#101D32]"
           >
             {/* Reference / Edit Source Image */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-[#101E35]">
+                <label className="text-xs font-medium text-[#101E35] dark:text-white">
                   {copy.refImageLabel}
                 </label>
                 {sourceImage && (
                   <button
                     type="button"
                     onClick={() => setSourceImage(null)}
-                    className="inline-flex items-center gap-1 text-xs text-[#303B49] hover:text-[#101E35] transition-colors"
+                    className="inline-flex items-center gap-1 text-xs text-[#303B49] dark:text-[#A8B8CD] hover:text-[#101E35] dark:hover:text-white transition-colors"
                   >
                     <Trash2 className="w-3 h-3" />
                     {copy.clear}
@@ -250,28 +250,28 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
               </div>
 
               {sourceImage ? (
-                <div className="flex items-center gap-3 p-2.5 bg-[#F8FAFC] border border-[#E8EEF4] rounded-lg">
+                <div className="flex items-center gap-3 p-2.5 bg-[#F8FAFC] dark:bg-[#15243C] border border-[#E8EEF4] dark:border-[#243858] rounded-lg">
                   <img
                     src={sourceImage.dataUrl}
                     alt={sourceImage.label}
                     className="w-14 h-14 object-contain bg-white border border-[#E8EEF4] rounded"
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs font-medium text-[#101E35] truncate">
+                    <div className="text-xs font-medium text-[#101E35] dark:text-white truncate">
                       {sourceImage.label}
                     </div>
-                    <div className="text-[11px] text-[#303B49] mt-0.5">
+                    <div className="text-[11px] text-[#303B49] dark:text-[#A8B8CD] mt-0.5">
                       {copy.editModeActive}
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="p-3 bg-[#F8FAFC] border border-dashed border-[#CBD5E1] rounded-lg space-y-2.5">
+                <div className="p-3 bg-[#F8FAFC] dark:bg-[#15243C] border border-dashed border-[#CBD5E1] dark:border-[#2A4063] rounded-lg space-y-2.5">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#101E35] bg-white border border-[#E8EEF4] hover:border-[#147DAB] rounded transition-colors whitespace-nowrap shrink-0"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#101E35] dark:text-[#E8EEF4] bg-white dark:bg-[#101D32] border border-[#E8EEF4] dark:border-[#2A4063] hover:border-[#147DAB] rounded transition-colors whitespace-nowrap shrink-0"
                     >
                       <Upload className="w-3.5 h-3.5 text-[#147DAB]" />
                       {copy.uploadImage}
@@ -279,7 +279,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                     <button
                       type="button"
                       onClick={handleLoadBoardSource}
-                      className="px-2.5 py-1.5 text-xs font-medium text-[#303B49] bg-white border border-[#E8EEF4] hover:border-[#147DAB] rounded transition-colors whitespace-nowrap shrink-0"
+                      className="px-2.5 py-1.5 text-xs font-medium text-[#303B49] dark:text-[#B5C4D6] bg-white dark:bg-[#101D32] border border-[#E8EEF4] dark:border-[#2A4063] hover:border-[#147DAB] rounded transition-colors whitespace-nowrap shrink-0"
                     >
                       {copy.loadBoard}
                     </button>
@@ -290,7 +290,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                         key={c.id}
                         type="button"
                         onClick={() => handleLoadConceptSource(c.id)}
-                        className="px-2.5 py-1 text-[11px] font-medium text-[#303B49] bg-white border border-[#E8EEF4] hover:border-[#147DAB] hover:text-[#101E35] rounded transition-colors whitespace-nowrap shrink-0"
+                        className="px-2.5 py-1 text-[11px] font-medium text-[#303B49] dark:text-[#B5C4D6] bg-white dark:bg-[#101D32] border border-[#E8EEF4] dark:border-[#2A4063] hover:border-[#147DAB] hover:text-[#101E35] dark:hover:text-white rounded transition-colors whitespace-nowrap shrink-0"
                       >
                         {c.number} {c[lang].name}
                       </button>
@@ -310,7 +310,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
 
             {/* Prompt Input */}
             <div className="space-y-2">
-              <label htmlFor="studio-prompt" className="block text-xs font-medium text-[#101E35]">
+              <label htmlFor="studio-prompt" className="block text-xs font-medium text-[#101E35] dark:text-white">
                 {copy.promptLabel}
               </label>
               <textarea
@@ -319,7 +319,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder={copy.promptPlaceholder}
-                className="w-full px-3 py-2.5 text-sm text-[#101E35] bg-white border border-[#E8EEF4] rounded-lg focus:outline-none focus:border-[#147DAB] focus:ring-1 focus:ring-[#147DAB] resize-none"
+                className="w-full px-3 py-2.5 text-sm text-[#101E35] dark:text-white placeholder:text-[#303B49]/60 dark:placeholder:text-[#8A9BB0] bg-white dark:bg-[#0D182A] border border-[#E8EEF4] dark:border-[#243858] rounded-lg focus:outline-none focus:border-[#147DAB] focus:ring-1 focus:ring-[#147DAB] resize-none"
               />
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {copy.presets.map((preset) => (
@@ -327,7 +327,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                     key={preset.label}
                     type="button"
                     onClick={() => setPrompt(preset.prompt)}
-                    className="px-2.5 py-1 text-[11px] text-[#303B49] bg-[#F8FAFC] border border-[#E8EEF4] hover:border-[#147DAB] hover:text-[#101E35] rounded transition-colors whitespace-nowrap shrink-0"
+                    className="px-2.5 py-1 text-[11px] text-[#303B49] dark:text-[#B5C4D6] bg-[#F8FAFC] dark:bg-[#15243C] border border-[#E8EEF4] dark:border-[#243858] hover:border-[#147DAB] hover:text-[#101E35] dark:hover:text-white rounded transition-colors whitespace-nowrap shrink-0"
                   >
                     {preset.label}
                   </button>
@@ -338,14 +338,14 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
             {/* Aspect Ratio & Resolution */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="studio-aspect" className="block text-xs font-medium text-[#101E35] mb-1.5">
+                <label htmlFor="studio-aspect" className="block text-xs font-medium text-[#101E35] dark:text-white mb-1.5">
                   {copy.aspectRatio}
                 </label>
                 <select
                   id="studio-aspect"
                   value={aspectRatio}
                   onChange={(e) => setAspectRatio(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-mono text-[#101E35] bg-white border border-[#E8EEF4] rounded-lg focus:outline-none focus:border-[#147DAB]"
+                  className="w-full px-3 py-2 text-xs font-mono text-[#101E35] dark:text-white bg-white dark:bg-[#0D182A] border border-[#E8EEF4] dark:border-[#243858] rounded-lg focus:outline-none focus:border-[#147DAB]"
                 >
                   <option value="16:9">{copy.aspectOptions["16:9"]}</option>
                   <option value="4:3">{copy.aspectOptions["4:3"]}</option>
@@ -354,14 +354,14 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                 </select>
               </div>
               <div>
-                <label htmlFor="studio-size" className="block text-xs font-medium text-[#101E35] mb-1.5">
+                <label htmlFor="studio-size" className="block text-xs font-medium text-[#101E35] dark:text-white mb-1.5">
                   {copy.resolution}
                 </label>
                 <select
                   id="studio-size"
                   value={imageSize}
                   onChange={(e) => setImageSize(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-mono text-[#101E35] bg-white border border-[#E8EEF4] rounded-lg focus:outline-none focus:border-[#147DAB]"
+                  className="w-full px-3 py-2 text-xs font-mono text-[#101E35] dark:text-white bg-white dark:bg-[#0D182A] border border-[#E8EEF4] dark:border-[#243858] rounded-lg focus:outline-none focus:border-[#147DAB]"
                 >
                   <option value="1K">1K</option>
                   <option value="2K">2K</option>
@@ -373,7 +373,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
             {errorMessage && (
               <div
                 role="alert"
-                className="p-3 text-xs leading-relaxed text-[#7F1D1D] bg-[#FEF2F2] border border-[#FECACA] rounded-lg"
+                className="p-3 text-xs leading-relaxed text-[#7F1D1D] dark:text-[#FECACA] bg-[#FEF2F2] dark:bg-[#450A0A]/60 border border-[#FECACA] dark:border-[#991B1B] rounded-lg"
               >
                 {errorMessage}
               </div>
@@ -382,7 +382,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
             <button
               type="submit"
               disabled={!prompt.trim() || isGenerating}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#101E35] hover:bg-[#147DAB] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#101E35] dark:bg-[#147DAB] hover:bg-[#147DAB] dark:hover:bg-[#1B92C7] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
             >
               {isGenerating ? (
                 <>
@@ -399,16 +399,16 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
           </form>
 
           {/* Right Output Canvas */}
-          <div className="lg:col-span-7 p-6 bg-[#F8FAFC] flex flex-col min-h-[360px]">
+          <div className="lg:col-span-7 p-6 bg-[#F8FAFC] dark:bg-[#0C1626] flex flex-col min-h-[360px]">
             {history.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-12 border border-[#E8EEF4] rounded-lg bg-white">
-                <div className="w-11 h-11 rounded-lg bg-[#E8EEF4]/60 flex items-center justify-center mb-3">
-                  <ImagePlus className="w-5 h-5 text-[#147DAB]" />
+              <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-12 border border-[#E8EEF4] dark:border-[#213350] rounded-lg bg-white dark:bg-[#101D32]">
+                <div className="w-11 h-11 rounded-lg bg-[#E8EEF4]/60 dark:bg-[#15243C] flex items-center justify-center mb-3">
+                  <ImagePlus className="w-5 h-5 text-[#147DAB] dark:text-[#4AB0DA]" />
                 </div>
-                <h3 className="font-display text-sm font-semibold text-[#101E35]">
+                <h3 className="font-display text-sm font-semibold text-[#101E35] dark:text-white">
                   {copy.studioEmptyTitle}
                 </h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-[#303B49] max-w-sm">
+                <p className="mt-1.5 text-xs leading-relaxed text-[#303B49] dark:text-[#B5C4D6] max-w-sm">
                   {copy.studioEmptyBody}{" "}
                   <span className="font-mono">gemini-nano-banana-2.1</span>.
                 </p>
@@ -418,9 +418,9 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                 {history.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-white border border-[#E8EEF4] rounded-lg overflow-hidden"
+                    className="bg-white dark:bg-[#101D32] border border-[#E8EEF4] dark:border-[#213350] rounded-lg overflow-hidden"
                   >
-                    <div className="bg-[#101E35]/5 flex items-center justify-center p-3">
+                    <div className="bg-[#101E35]/5 dark:bg-[#070E1A] flex items-center justify-center p-3">
                       <img
                         src={item.imageDataUrl}
                         alt={item.prompt}
@@ -428,7 +428,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                       />
                     </div>
                     <div className="p-4 space-y-3">
-                      <div className="flex items-center justify-between gap-2 text-[11px] font-mono text-[#303B49]">
+                      <div className="flex items-center justify-between gap-2 text-[11px] font-mono text-[#303B49] dark:text-[#A8B8CD]">
                         <span>
                           {item.mode === "edit" ? copy.editedLabel : copy.createdLabel} · {item.aspectRatio} · {item.imageSize}
                         </span>
@@ -436,23 +436,23 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                           <button
                             type="button"
                             onClick={() => handleUseAsSource(item)}
-                            className="px-2.5 py-1 text-xs font-sans font-medium text-[#101E35] bg-[#F8FAFC] border border-[#E8EEF4] hover:border-[#147DAB] rounded transition-colors"
+                            className="px-2.5 py-1 text-xs font-sans font-medium text-[#101E35] dark:text-[#E8EEF4] bg-[#F8FAFC] dark:bg-[#15243C] border border-[#E8EEF4] dark:border-[#243858] hover:border-[#147DAB] rounded transition-colors"
                           >
                             {copy.editFurther}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDownloadResult(item)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-sans font-medium text-white bg-[#101E35] hover:bg-[#147DAB] rounded transition-colors"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-sans font-medium text-white bg-[#101E35] dark:bg-[#147DAB] hover:bg-[#147DAB] dark:hover:bg-[#1B92C7] rounded transition-colors"
                           >
                             <Download className="w-3 h-3" />
                             PNG
                           </button>
                         </div>
                       </div>
-                      <p className="text-xs text-[#303B49] leading-relaxed">{item.prompt}</p>
+                      <p className="text-xs text-[#303B49] dark:text-[#B5C4D6] leading-relaxed">{item.prompt}</p>
                       {item.note && (
-                        <p className="text-[11px] text-[#303B49]/80 border-t border-[#E8EEF4] pt-2">
+                        <p className="text-[11px] text-[#303B49]/80 dark:text-[#9FB0C4] border-t border-[#E8EEF4] dark:border-[#1E2F4A] pt-2">
                           {item.note}
                         </p>
                       )}
