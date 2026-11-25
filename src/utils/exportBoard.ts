@@ -1,4 +1,11 @@
-import { BRAND_COLORS, BRAND_INFO, ConceptId, LOGO_CONCEPTS } from "../data/concepts";
+import {
+  BRAND_COLORS,
+  BRAND_INFO,
+  ConceptId,
+  Language,
+  LOGO_CONCEPTS,
+  UI_COPY,
+} from "../data/concepts";
 import { SymbolVariant } from "../components/EdgeNetLogos";
 
 function getSymbolInnerSvg(conceptId: ConceptId, variant: SymbolVariant): string {
@@ -116,21 +123,27 @@ function wrapTextLines(text: string, maxChars: number): string[] {
  * Generates a self-contained 1920x1080 (16:9) presentation board SVG for clean PNG/SVG export
  * and for passing directly into the Gemini image editing studio.
  */
-export function buildFullBoardSvg(): string {
+export function buildFullBoardSvg(lang: Language = "en"): string {
   const W = 1920;
   const H = 1080;
   const headerH = 88;
   const footerH = 112;
-  const bodyH = H - headerH - footerH;
   const colW = W / 3;
+  const copy = UI_COPY[lang];
+  const displayFont = "Plus Jakarta Sans, Noto Sans KR, Arial, sans-serif";
+  const bodyFont = "DM Sans, Noto Sans KR, Arial, sans-serif";
 
   const columnsSvg = LOGO_CONCEPTS.map((concept, idx) => {
+    const localized = concept[lang];
     const x0 = idx * colW;
     const cx = x0 + colW / 2;
     const primarySymbolSvg = getSymbolInnerSvg(concept.id, "color");
     const monoSymbolSvg = getSymbolInnerSvg(concept.id, "monochrome");
     const darkSymbolSvg = getSymbolInnerSvg(concept.id, "dark");
-    const meaningLines = wrapTextLines(concept.strategicMeaning, 52);
+    const meaningLines = wrapTextLines(
+      localized.strategicMeaning,
+      lang === "ko" ? 31 : 52
+    );
 
     const divider =
       idx > 0
@@ -146,7 +159,7 @@ export function buildFullBoardSvg(): string {
     return `
       ${divider}
       <!-- Concept Title -->
-      <text x="${x0 + 56}" y="${headerH + 66}" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="2.2" fill="#147DAB">${escapeXml(concept.fullTitle)}</text>
+      <text x="${x0 + 56}" y="${headerH + 66}" font-family="${displayFont}" font-size="15" font-weight="600" letter-spacing="1.6" fill="#147DAB">${escapeXml(localized.fullTitle)}</text>
       <line x1="${x0 + 56}" y1="${headerH + 86}" x2="${x0 + colW - 56}" y2="${headerH + 86}" stroke="#E8EEF4" stroke-width="1.5" />
 
       <!-- Primary Symbol Showcase -->
@@ -160,11 +173,11 @@ export function buildFullBoardSvg(): string {
         <g transform="translate(0, 0) scale(0.38)">
           ${primarySymbolSvg}
         </g>
-        <text x="58" y="34" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="34" font-weight="600" letter-spacing="-1" fill="#101E35">EdgeNet</text>
+        <text x="58" y="34" font-family="${displayFont}" font-size="34" font-weight="600" letter-spacing="-1" fill="#101E35">EdgeNet</text>
       </g>
 
       <!-- Strategic Meaning -->
-      <text x="${x0 + 56}" y="${headerH + 504}" font-family="DM Sans, Arial, sans-serif" font-size="16.5" fill="#303B49">
+      <text x="${x0 + 56}" y="${headerH + 504}" font-family="${bodyFont}" font-size="16" fill="#303B49">
         ${meaningLines
           .map(
             (line, lineIdx) =>
@@ -175,18 +188,18 @@ export function buildFullBoardSvg(): string {
 
       <!-- Monochrome & Dark Application Previews -->
       <rect x="${leftBoxX}" y="${previewY}" width="${previewW}" height="186" rx="6" fill="#F7F9FC" stroke="#E8EEF4" stroke-width="1.5" />
-      <text x="${leftBoxX + 18}" y="${previewY + 30}" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11.5" font-weight="600" letter-spacing="1.4" fill="#303B49">MONOCHROME</text>
+      <text x="${leftBoxX + 18}" y="${previewY + 30}" font-family="${displayFont}" font-size="11.5" font-weight="600" letter-spacing="1.2" fill="#303B49">${escapeXml(copy.monochrome.toUpperCase())}</text>
       <g transform="translate(${leftBoxX + 42}, ${previewY + 72}) scale(0.46)">
         ${monoSymbolSvg}
       </g>
-      <text x="${leftBoxX + 106}" y="${previewY + 108}" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="-0.6" fill="#101E35">EdgeNet</text>
+      <text x="${leftBoxX + 106}" y="${previewY + 108}" font-family="${displayFont}" font-size="22" font-weight="600" letter-spacing="-0.6" fill="#101E35">EdgeNet</text>
 
       <rect x="${rightBoxX}" y="${previewY}" width="${previewW}" height="186" rx="6" fill="#101E35" />
-      <text x="${rightBoxX + 18}" y="${previewY + 30}" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11.5" font-weight="600" letter-spacing="1.4" fill="#A5B7CB">DARK SURFACE</text>
+      <text x="${rightBoxX + 18}" y="${previewY + 30}" font-family="${displayFont}" font-size="11.5" font-weight="600" letter-spacing="1.2" fill="#A5B7CB">${escapeXml(copy.darkSurface.toUpperCase())}</text>
       <g transform="translate(${rightBoxX + 42}, ${previewY + 72}) scale(0.46)">
         ${darkSymbolSvg}
       </g>
-      <text x="${rightBoxX + 106}" y="${previewY + 108}" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="-0.6" fill="#FFFFFF">EdgeNet</text>
+      <text x="${rightBoxX + 106}" y="${previewY + 108}" font-family="${displayFont}" font-size="22" font-weight="600" letter-spacing="-0.6" fill="#FFFFFF">EdgeNet</text>
     `;
   }).join("\n");
 
@@ -198,7 +211,7 @@ export function buildFullBoardSvg(): string {
       swatch.isLight ? 'stroke="#303B49" stroke-width="1"' : ""
     } />
       <text x="${sx}" y="${sy + 48}" font-family="IBM Plex Mono, monospace" font-size="12" fill="#E8EEF4">${swatch.hex}</text>
-      <text x="${sx}" y="${sy + 64}" font-family="DM Sans, Arial, sans-serif" font-size="11" fill="#9FB0C4">${escapeXml(swatch.name)}</text>
+      <text x="${sx}" y="${sy + 64}" font-family="${bodyFont}" font-size="11" fill="#9FB0C4">${escapeXml(swatch.name[lang])}</text>
     `;
   }).join("\n");
 
@@ -209,20 +222,20 @@ export function buildFullBoardSvg(): string {
       <!-- Top Header Strip -->
       <rect width="${W}" height="${headerH}" fill="#F8FAFC" />
       <line x1="0" y1="${headerH}" x2="${W}" y2="${headerH}" stroke="#E8EEF4" stroke-width="2" />
-      <text x="56" y="53" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="-0.4" fill="#101E35">${escapeXml(BRAND_INFO.brandName)} — Identity Direction Board</text>
-      <text x="${W - 56}" y="53" text-anchor="end" font-family="DM Sans, Arial, sans-serif" font-size="15" fill="#303B49">${escapeXml(BRAND_INFO.presentingCompany)}  ·  ${escapeXml(BRAND_INFO.descriptor)}</text>
+      <text x="56" y="53" font-family="${displayFont}" font-size="22" font-weight="600" letter-spacing="-0.4" fill="#101E35">${escapeXml(BRAND_INFO.boardTitle[lang])}</text>
+      <text x="${W - 56}" y="53" text-anchor="end" font-family="${bodyFont}" font-size="15" fill="#303B49">${escapeXml(BRAND_INFO.presentingCompany)}  ·  ${escapeXml(BRAND_INFO.descriptor[lang])}</text>
 
       <!-- Three Concept Columns -->
       <g>${columnsSvg}</g>
 
       <!-- Restrained Dark Navy Footer -->
       <rect x="0" y="${H - footerH}" width="${W}" height="${footerH}" fill="#101E35" />
-      <text x="56" y="${H - footerH + 46}" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" font-weight="600" fill="#FFFFFF">${escapeXml(BRAND_INFO.presentingCompany)}</text>
-      <text x="56" y="${H - footerH + 74}" font-family="DM Sans, Arial, sans-serif" font-size="14" fill="#B5C4D6">${escapeXml(BRAND_INFO.descriptor)}</text>
+      <text x="56" y="${H - footerH + 46}" font-family="${displayFont}" font-size="18" font-weight="600" fill="#FFFFFF">${escapeXml(BRAND_INFO.presentingCompany)}</text>
+      <text x="56" y="${H - footerH + 74}" font-family="${bodyFont}" font-size="14" fill="#B5C4D6">${escapeXml(BRAND_INFO.descriptor[lang])}</text>
 
       ${paletteSwatches}
 
-      <text x="${W - 56}" y="${H - footerH + 60}" text-anchor="end" font-family="DM Sans, Arial, sans-serif" font-size="14" fill="#B5C4D6">${escapeXml(BRAND_INFO.boardNote)}</text>
+      <text x="${W - 56}" y="${H - footerH + 60}" text-anchor="end" font-family="${bodyFont}" font-size="14" fill="#B5C4D6">${escapeXml(BRAND_INFO.boardNote[lang])}</text>
     </svg>
   `.trim();
 }
@@ -267,12 +280,12 @@ export async function svgStringToPngBase64(
   });
 }
 
-export async function downloadBoardAsPng() {
-  const svg = buildFullBoardSvg();
+export async function downloadBoardAsPng(lang: Language = "en") {
+  const svg = buildFullBoardSvg(lang);
   const { dataUrl } = await svgStringToPngBase64(svg, 1920, 1080);
   const a = document.createElement("a");
   a.href = dataUrl;
-  a.download = "EdgeNet-Logo-Exploration-Board-16x9.png";
+  a.download = `EdgeNet-Logo-Exploration-Board-16x9-${lang}.png`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

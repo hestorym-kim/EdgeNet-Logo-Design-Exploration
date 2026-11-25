@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Download, X, Sparkles } from "lucide-react";
-import { ConceptId, LogoConcept } from "../data/concepts";
+import { ConceptId, Language, LogoConcept, UI_COPY } from "../data/concepts";
 import { ConceptSymbol, EdgeNetWordmark } from "./EdgeNetLogos";
 import {
   buildStandaloneSymbolSvg,
@@ -10,12 +10,14 @@ import {
 
 interface ConceptInspectorModalProps {
   concept: LogoConcept | null;
+  lang: Language;
   onClose: () => void;
   onSendToStudio: (dataUrl: string, base64: string, label: string) => void;
 }
 
 export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
   concept,
+  lang,
   onClose,
   onSendToStudio,
 }) => {
@@ -30,6 +32,9 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
 
   if (!concept) return null;
 
+  const copy = UI_COPY[lang];
+  const localized = concept[lang];
+
   const handleDownloadSvg = (variant: "color" | "monochrome") => {
     const svg = buildStandaloneSymbolSvg(concept.id, variant);
     downloadSvgFile(`edgenet-${concept.id}-${variant}.svg`, svg);
@@ -38,7 +43,7 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
   const handleOpenInStudio = async (id: ConceptId) => {
     const svg = buildStandaloneSymbolSvg(id, "color");
     const { dataUrl, base64 } = await svgStringToPngBase64(svg, 1024, 1024);
-    onSendToStudio(dataUrl, base64, `${concept.fullTitle} (Primary Mark)`);
+    onSendToStudio(dataUrl, base64, `${localized.fullTitle} (${copy.primaryMarkLabel})`);
   };
 
   return (
@@ -57,15 +62,15 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8EEF4] bg-[#F8FAFC]">
           <div className="flex items-center gap-3">
             <span className="font-display text-xs font-semibold tracking-[0.12em] uppercase text-[#147DAB]">
-              {concept.fullTitle}
+              {localized.fullTitle}
             </span>
             <span className="text-[#303B49]/40" aria-hidden="true">·</span>
-            <span className="text-xs text-[#303B49]">Scale & Engraving Inspection</span>
+            <span className="text-xs text-[#303B49]">{copy.inspectorSubtitle}</span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close concept inspection modal"
+            aria-label="Close"
             className="p-2 text-[#303B49] hover:text-[#101E35] hover:bg-[#E8EEF4]/60 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
           >
             <X className="w-4 h-4" />
@@ -87,17 +92,17 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
             <div className="lg:col-span-7 flex flex-col justify-between space-y-5">
               <div>
                 <h2 id="inspector-title" className="font-display text-xl font-semibold text-[#101E35]">
-                  {concept.name}
+                  {localized.name}
                 </h2>
                 <p className="mt-2 text-sm leading-relaxed text-[#303B49]">
-                  {concept.designRationale}
+                  {localized.designRationale}
                 </p>
               </div>
 
               {/* Scale Legibility Matrix */}
               <div className="border border-[#E8EEF4] rounded-lg p-4 bg-white">
                 <div className="text-xs font-medium text-[#303B49] mb-3">
-                  Optical Scale Legibility
+                  {copy.opticalScale}
                 </div>
                 <div className="grid grid-cols-4 gap-3 items-end">
                   <div className="flex flex-col items-center gap-2 py-2 border-r border-[#E8EEF4]">
@@ -122,7 +127,7 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
                     <div className="h-12 flex items-center justify-center">
                       <ConceptSymbol conceptId={concept.id} variant="dark" size={36} />
                     </div>
-                    <span className="font-mono text-[11px] text-[#E8EEF4] tabular-nums">Chassis</span>
+                    <span className="font-mono text-[11px] text-[#E8EEF4] tabular-nums">{copy.chassis}</span>
                   </div>
                 </div>
               </div>
@@ -133,10 +138,10 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-[#E8EEF4]">
             <div>
               <h3 className="font-display text-xs font-semibold uppercase tracking-[0.1em] text-[#101E35] mb-3">
-                Construction Specifications
+                {copy.constructionSpecs}
               </h3>
               <ul className="space-y-2 text-sm text-[#303B49]">
-                {concept.geometrySpecs.map((spec, i) => (
+                {localized.geometrySpecs.map((spec, i) => (
                   <li key={i} className="flex items-start gap-2.5">
                     <span className="font-mono text-xs text-[#147DAB] mt-0.5 tabular-nums">
                       0{i + 1}
@@ -149,10 +154,10 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
 
             <div>
               <h3 className="font-display text-xs font-semibold uppercase tracking-[0.1em] text-[#101E35] mb-3">
-                Primary Deployment Surfaces
+                {copy.deploymentSurfaces}
               </h3>
               <ul className="space-y-2 text-sm text-[#303B49]">
-                {concept.applicationContexts.map((ctx, i) => (
+                {localized.applicationContexts.map((ctx, i) => (
                   <li key={i} className="flex items-start gap-2.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#3F8F6B] mt-2 shrink-0" />
                     <span>{ctx}</span>
@@ -172,7 +177,7 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
               className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-[#101E35] bg-white border border-[#E8EEF4] hover:border-[#147DAB] rounded-lg transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
             >
               <Download className="w-3.5 h-3.5 text-[#147DAB]" />
-              Download Color SVG
+              {copy.downloadColorSvg}
             </button>
             <button
               type="button"
@@ -180,7 +185,7 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
               className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-[#101E35] bg-white border border-[#E8EEF4] hover:border-[#101E35] rounded-lg transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
             >
               <Download className="w-3.5 h-3.5 text-[#303B49]" />
-              Download Monochrome SVG
+              {copy.downloadMonoSvg}
             </button>
           </div>
 
@@ -190,7 +195,7 @@ export const ConceptInspectorModal: React.FC<ConceptInspectorModalProps> = ({
             className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-[#101E35] hover:bg-[#147DAB] rounded-lg transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            Mockup in Image Studio
+            {copy.mockupInStudio}
           </button>
         </div>
       </div>

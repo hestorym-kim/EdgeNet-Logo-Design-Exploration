@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Download, ImagePlus, Loader2, Sparkles, Trash2, Upload, X } from "lucide-react";
-import { LOGO_CONCEPTS, ConceptId } from "../data/concepts";
+import { ConceptId, Language, LOGO_CONCEPTS, UI_COPY } from "../data/concepts";
 import {
   buildFullBoardSvg,
   buildStandaloneSymbolSvg,
@@ -19,6 +19,7 @@ interface GeneratedImageRecord {
 
 interface ImageStudioModalProps {
   isOpen: boolean;
+  lang: Language;
   onClose: () => void;
   initialSourceImage?: {
     dataUrl: string;
@@ -27,29 +28,13 @@ interface ImageStudioModalProps {
   } | null;
 }
 
-const PROMPT_PRESETS = [
-  {
-    label: "Hardware Chassis Engraving",
-    prompt:
-      "Photorealistic macro studio photograph of this EdgeNet logo precision laser-engraved onto a matte anodized deep navy and brushed aluminum edge AI server chassis, soft architectural side lighting, clean enterprise industrial design.",
-  },
-  {
-    label: "Enterprise Keynote Backdrop",
-    prompt:
-      "Minimalist international B2B technology summit stage backdrop featuring the EdgeNet corporate identity in crisp white on deep navy architectural panels, clean glass atrium lighting, editorial photography.",
-  },
-  {
-    label: "Device Silicon Label",
-    prompt:
-      "Studio product photography of an industrial edge compute module housing with a clean etched monochrome EdgeNet symbol and wordmark on bead-blasted steel, diffused neutral daylight, sharp focus.",
-  },
-];
-
 export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
   isOpen,
+  lang,
   onClose,
   initialSourceImage = null,
 }) => {
+  const copy = UI_COPY[lang];
   const [prompt, setPrompt] = useState("");
   const [aspectRatio, setAspectRatio] = useState("16:9");
   const [imageSize, setImageSize] = useState("1K");
@@ -73,7 +58,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
         label: initialSourceImage.label,
       });
       if (!prompt) {
-        setPrompt(PROMPT_PRESETS[0].prompt);
+        setPrompt(copy.presets[0].prompt);
       }
     }
   }, [initialSourceImage]);
@@ -97,19 +82,19 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
       dataUrl,
       base64,
       mimeType: "image/png",
-      label: concept ? `${concept.fullTitle}` : conceptId,
+      label: concept ? concept[lang].fullTitle : conceptId,
     });
     setErrorMessage(null);
   };
 
   const handleLoadBoardSource = async () => {
-    const svg = buildFullBoardSvg();
+    const svg = buildFullBoardSvg(lang);
     const { dataUrl, base64 } = await svgStringToPngBase64(svg, 1920, 1080);
     setSourceImage({
       dataUrl,
       base64,
       mimeType: "image/png",
-      label: "Full 16:9 Exploration Board",
+      label: copy.fullBoardLabel,
     });
     setErrorMessage(null);
   };
@@ -118,7 +103,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setErrorMessage("Please select a valid image file (PNG, JPEG, or WebP).");
+      setErrorMessage(copy.invalidImageError);
       return;
     }
 
@@ -127,7 +112,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
       const result = typeof reader.result === "string" ? reader.result : "";
       const base64 = result.split(",")[1] ?? "";
       if (!base64) {
-        setErrorMessage("Could not read image contents.");
+        setErrorMessage(copy.readImageError);
         return;
       }
       setSourceImage({
@@ -164,7 +149,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
 
       const data = await response.json();
       if (!response.ok) {
-        setErrorMessage(data?.error || "Image generation failed.");
+        setErrorMessage(data?.error || copy.genFailedError);
         return;
       }
 
@@ -181,7 +166,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
       setHistory((prev) => [record, ...prev]);
     } catch (err) {
       setErrorMessage(
-        err instanceof Error ? err.message : "Network error while contacting image service."
+        err instanceof Error ? err.message : copy.networkError
       );
     } finally {
       setIsGenerating(false);
@@ -195,7 +180,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
       dataUrl: item.imageDataUrl,
       base64: base64 ?? "",
       mimeType: mimeMatch?.[1] ?? "image/png",
-      label: "Previous Generated Image",
+      label: copy.previousImageLabel,
     });
   };
 
@@ -224,7 +209,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8EEF4] bg-[#F8FAFC]">
           <div className="flex items-center gap-3">
             <h2 id="studio-title" className="font-display text-base font-semibold text-[#101E35]">
-              Brand Visual Studio
+              {copy.studioTitle}
             </h2>
             <span className="text-[#303B49]/40" aria-hidden="true">·</span>
             <span className="font-mono text-xs text-[#303B49]">gemini-nano-banana-2.1</span>
@@ -232,7 +217,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close Brand Visual Studio"
+            aria-label="Close"
             className="p-2 text-[#303B49] hover:text-[#101E35] hover:bg-[#E8EEF4]/60 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
           >
             <X className="w-4 h-4" />
@@ -250,7 +235,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-medium text-[#101E35]">
-                  Reference Image (Optional — for editing)
+                  {copy.refImageLabel}
                 </label>
                 {sourceImage && (
                   <button
@@ -259,7 +244,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                     className="inline-flex items-center gap-1 text-xs text-[#303B49] hover:text-[#101E35] transition-colors"
                   >
                     <Trash2 className="w-3 h-3" />
-                    Clear
+                    {copy.clear}
                   </button>
                 )}
               </div>
@@ -276,7 +261,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                       {sourceImage.label}
                     </div>
                     <div className="text-[11px] text-[#303B49] mt-0.5">
-                      Edit mode active · Prompt modifies this visual
+                      {copy.editModeActive}
                     </div>
                   </div>
                 </div>
@@ -289,14 +274,14 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                       className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#101E35] bg-white border border-[#E8EEF4] hover:border-[#147DAB] rounded transition-colors whitespace-nowrap shrink-0"
                     >
                       <Upload className="w-3.5 h-3.5 text-[#147DAB]" />
-                      Upload Image
+                      {copy.uploadImage}
                     </button>
                     <button
                       type="button"
                       onClick={handleLoadBoardSource}
                       className="px-2.5 py-1.5 text-xs font-medium text-[#303B49] bg-white border border-[#E8EEF4] hover:border-[#147DAB] rounded transition-colors whitespace-nowrap shrink-0"
                     >
-                      Load 16:9 Board
+                      {copy.loadBoard}
                     </button>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -307,7 +292,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                         onClick={() => handleLoadConceptSource(c.id)}
                         className="px-2.5 py-1 text-[11px] font-medium text-[#303B49] bg-white border border-[#E8EEF4] hover:border-[#147DAB] hover:text-[#101E35] rounded transition-colors whitespace-nowrap shrink-0"
                       >
-                        Use {c.number} {c.name}
+                        {c.number} {c[lang].name}
                       </button>
                     ))}
                   </div>
@@ -326,18 +311,18 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
             {/* Prompt Input */}
             <div className="space-y-2">
               <label htmlFor="studio-prompt" className="block text-xs font-medium text-[#101E35]">
-                Prompt
+                {copy.promptLabel}
               </label>
               <textarea
                 id="studio-prompt"
                 rows={4}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe a new brand visual to create, or how to edit the loaded EdgeNet symbol..."
+                placeholder={copy.promptPlaceholder}
                 className="w-full px-3 py-2.5 text-sm text-[#101E35] bg-white border border-[#E8EEF4] rounded-lg focus:outline-none focus:border-[#147DAB] focus:ring-1 focus:ring-[#147DAB] resize-none"
               />
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {PROMPT_PRESETS.map((preset) => (
+                {copy.presets.map((preset) => (
                   <button
                     key={preset.label}
                     type="button"
@@ -354,7 +339,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label htmlFor="studio-aspect" className="block text-xs font-medium text-[#101E35] mb-1.5">
-                  Aspect Ratio
+                  {copy.aspectRatio}
                 </label>
                 <select
                   id="studio-aspect"
@@ -362,15 +347,15 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                   onChange={(e) => setAspectRatio(e.target.value)}
                   className="w-full px-3 py-2 text-xs font-mono text-[#101E35] bg-white border border-[#E8EEF4] rounded-lg focus:outline-none focus:border-[#147DAB]"
                 >
-                  <option value="16:9">16:9 Landscape</option>
-                  <option value="4:3">4:3 Standard</option>
-                  <option value="1:1">1:1 Square</option>
-                  <option value="3:4">3:4 Portrait</option>
+                  <option value="16:9">{copy.aspectOptions["16:9"]}</option>
+                  <option value="4:3">{copy.aspectOptions["4:3"]}</option>
+                  <option value="1:1">{copy.aspectOptions["1:1"]}</option>
+                  <option value="3:4">{copy.aspectOptions["3:4"]}</option>
                 </select>
               </div>
               <div>
                 <label htmlFor="studio-size" className="block text-xs font-medium text-[#101E35] mb-1.5">
-                  Resolution
+                  {copy.resolution}
                 </label>
                 <select
                   id="studio-size"
@@ -402,12 +387,12 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
               {isGenerating ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Generating with gemini-nano-banana-2.1...
+                  {copy.generating}
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  {sourceImage ? "Edit Image" : "Create Image"}
+                  {sourceImage ? copy.editImageBtn : copy.createImageBtn}
                 </>
               )}
             </button>
@@ -421,10 +406,11 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                   <ImagePlus className="w-5 h-5 text-[#147DAB]" />
                 </div>
                 <h3 className="font-display text-sm font-semibold text-[#101E35]">
-                  Create or Edit Brand Application Assets
+                  {copy.studioEmptyTitle}
                 </h3>
                 <p className="mt-1.5 text-xs leading-relaxed text-[#303B49] max-w-sm">
-                  Load one of the three EdgeNet symbols or enter a text prompt to generate photorealistic hardware mockups, signage, or brand environments with <span className="font-mono">gemini-nano-banana-2.1</span>.
+                  {copy.studioEmptyBody}{" "}
+                  <span className="font-mono">gemini-nano-banana-2.1</span>.
                 </p>
               </div>
             ) : (
@@ -444,7 +430,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                     <div className="p-4 space-y-3">
                       <div className="flex items-center justify-between gap-2 text-[11px] font-mono text-[#303B49]">
                         <span>
-                          {item.mode === "edit" ? "Edited" : "Created"} · {item.aspectRatio} · {item.imageSize}
+                          {item.mode === "edit" ? copy.editedLabel : copy.createdLabel} · {item.aspectRatio} · {item.imageSize}
                         </span>
                         <div className="flex items-center gap-2">
                           <button
@@ -452,7 +438,7 @@ export const ImageStudioModal: React.FC<ImageStudioModalProps> = ({
                             onClick={() => handleUseAsSource(item)}
                             className="px-2.5 py-1 text-xs font-sans font-medium text-[#101E35] bg-[#F8FAFC] border border-[#E8EEF4] hover:border-[#147DAB] rounded transition-colors"
                           >
-                            Edit Further
+                            {copy.editFurther}
                           </button>
                           <button
                             type="button"
