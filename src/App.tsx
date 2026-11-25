@@ -1,0 +1,308 @@
+import { useState } from "react";
+import { Download, Grid, Image as ImageIcon, Maximize2 } from "lucide-react";
+import {
+  BRAND_COLORS,
+  BRAND_INFO,
+  LOGO_CONCEPTS,
+  LogoConcept,
+} from "./data/concepts";
+import { ConceptSymbol, EdgeNetWordmark } from "./components/EdgeNetLogos";
+import { ConceptInspectorModal } from "./components/ConceptInspectorModal";
+import { ImageStudioModal } from "./components/ImageStudioModal";
+import {
+  buildFullBoardSvg,
+  downloadBoardAsPng,
+  downloadSvgFile,
+} from "./utils/exportBoard";
+
+export default function App() {
+  const [showGrid, setShowGrid] = useState(false);
+  const [inspectedConcept, setInspectedConcept] = useState<LogoConcept | null>(null);
+  const [studioOpen, setStudioOpen] = useState(false);
+  const [studioInitialSource, setStudioInitialSource] = useState<{
+    dataUrl: string;
+    base64: string;
+    label: string;
+  } | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportPng = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      await downloadBoardAsPng();
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportBoardSvg = () => {
+    const svg = buildFullBoardSvg();
+    downloadSvgFile("EdgeNet-Logo-Exploration-Board-16x9.svg", svg);
+  };
+
+  const handleSendToStudio = (dataUrl: string, base64: string, label: string) => {
+    setInspectedConcept(null);
+    setStudioInitialSource({ dataUrl, base64, label });
+    setStudioOpen(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#E8EEF4]/60 text-[#101E35] flex flex-col">
+      {/* Top Bar Contract: 3 clean single-row zones */}
+      <header className="w-full bg-white border-b border-[#E8EEF4]">
+        <div className="max-w-[1440px] mx-auto px-6 py-3.5 flex items-center justify-between gap-8">
+          {/* Zone 1: Brand Title */}
+          <a
+            href="#board"
+            className="font-display text-base font-semibold tracking-tight text-[#101E35] whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB] rounded"
+          >
+            {BRAND_INFO.presentingCompany}
+          </a>
+
+          {/* Zone 2: Clean Utility Controls */}
+          <nav
+            aria-label="Presentation Controls"
+            className="flex items-center gap-6 text-sm font-medium text-[#303B49]"
+          >
+            <button
+              type="button"
+              onClick={() => setShowGrid((prev) => !prev)}
+              aria-pressed={showGrid}
+              className={`inline-flex items-center gap-1.5 py-1 border-b-2 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB] ${
+                showGrid
+                  ? "border-[#147DAB] text-[#101E35]"
+                  : "border-transparent hover:text-[#101E35]"
+              }`}
+            >
+              <Grid className="w-3.5 h-3.5" />
+              Construction Grid
+            </button>
+
+            <button
+              type="button"
+              onClick={handleExportBoardSvg}
+              className="hidden sm:inline-flex items-center gap-1.5 py-1 border-b-2 border-transparent hover:text-[#101E35] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Board SVG
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setStudioInitialSource(null);
+                setStudioOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 py-1 border-b-2 border-transparent hover:text-[#101E35] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
+            >
+              <ImageIcon className="w-3.5 h-3.5 text-[#147DAB]" />
+              Image Studio
+            </button>
+          </nav>
+
+          {/* Zone 3: 1 Primary Action */}
+          <div className="flex items-center shrink-0">
+            <button
+              type="button"
+              onClick={handleExportPng}
+              disabled={isExporting}
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-[#101E35] hover:bg-[#147DAB] disabled:opacity-60 rounded-lg transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
+            >
+              <Download className="w-3.5 h-3.5" />
+              {isExporting ? "Exporting..." : "Export 16:9 PNG"}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Presentation Stage */}
+      <main id="board" className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex items-center justify-center">
+        {/* 16:9 Landscape Presentation Board */}
+        <section
+          aria-label="EdgeNet Logo Design Exploration Board"
+          className="w-full bg-white border border-[#D8E2EC] shadow-[0_20px_60px_-24px_rgba(16,30,53,0.16)] rounded-sm overflow-hidden flex flex-col lg:aspect-[16/9]"
+        >
+          {/* Board Header Strip */}
+          <div className="px-6 lg:px-10 py-4 bg-[#F8FAFC] border-b border-[#E8EEF4] flex flex-wrap items-center justify-between gap-4 shrink-0">
+            <div className="flex items-center gap-3">
+              <h1 className="font-display text-base lg:text-lg font-semibold tracking-tight text-[#101E35]">
+                {BRAND_INFO.brandName} — Logo Design Exploration
+              </h1>
+            </div>
+            <div className="flex items-center gap-2.5 text-xs text-[#303B49]">
+              <span className="font-medium text-[#101E35]">{BRAND_INFO.presentingCompany}</span>
+              <span className="text-[#303B49]/40" aria-hidden="true">·</span>
+              <span>{BRAND_INFO.descriptor}</span>
+            </div>
+          </div>
+
+          {/* Three Equally Sized Vertical Concept Columns */}
+          <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-[#E8EEF4]">
+            {LOGO_CONCEPTS.map((concept) => (
+              <article
+                key={concept.id}
+                className="p-6 lg:px-8 lg:py-6 flex flex-col justify-between gap-4 bg-white group"
+              >
+                {/* 1. Concept Number & Name */}
+                <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-[#E8EEF4]">
+                  <h2 className="font-display text-xs font-semibold tracking-[0.12em] uppercase text-[#147DAB]">
+                    {concept.fullTitle}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setInspectedConcept(concept)}
+                    aria-label={`Inspect ${concept.fullTitle}`}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-[#303B49] hover:text-[#147DAB] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB] rounded px-1.5 py-0.5"
+                  >
+                    <Maximize2 className="w-3 h-3" />
+                    Inspect
+                  </button>
+                </div>
+
+                {/* 2. Large Primary Logo Symbol + 3. EdgeNet Wordmark Lockup */}
+                <div
+                  onClick={() => setInspectedConcept(concept)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setInspectedConcept(concept);
+                    }
+                  }}
+                  aria-label={`Open scale inspection for ${concept.name}`}
+                  className="flex-1 min-h-[190px] bg-[#F8FAFC] border border-[#E8EEF4] group-hover:border-[#147DAB]/50 rounded-md px-5 py-5 flex flex-col items-center justify-center gap-4 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147DAB]"
+                >
+                  <ConceptSymbol
+                    conceptId={concept.id}
+                    variant="color"
+                    showGrid={showGrid}
+                    className="w-[116px] h-[116px] xl:w-[132px] xl:h-[132px]"
+                  />
+
+                  <div className="flex items-center gap-3 pt-3 border-t border-[#E8EEF4]/90">
+                    <ConceptSymbol
+                      conceptId={concept.id}
+                      variant="color"
+                      size={26}
+                    />
+                    <EdgeNetWordmark size="md" />
+                  </div>
+                </div>
+
+                {/* 4. Short Strategic Meaning */}
+                <p className="text-[13px] leading-[1.55] text-[#303B49]">
+                  {concept.strategicMeaning}
+                </p>
+
+                {/* 5. Small Monochrome Variation & 6. Small Dark-Background Application Preview */}
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  {/* Monochrome Variation */}
+                  <div className="bg-[#F7F9FC] border border-[#E8EEF4] rounded-md px-3.5 py-3 flex flex-col justify-between gap-2.5">
+                    <span className="text-[10px] font-display font-semibold uppercase tracking-[0.11em] text-[#303B49]">
+                      Monochrome
+                    </span>
+                    <div className="flex items-center gap-2 py-1">
+                      <ConceptSymbol
+                        conceptId={concept.id}
+                        variant="monochrome"
+                        size={24}
+                      />
+                      <EdgeNetWordmark size="sm" />
+                    </div>
+                  </div>
+
+                  {/* Dark-Background Application Preview */}
+                  <div className="bg-[#101E35] border border-[#101E35] rounded-md px-3.5 py-3 flex flex-col justify-between gap-2.5 relative overflow-hidden">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-display font-semibold uppercase tracking-[0.11em] text-[#9FB0C4]">
+                        Dark Surface
+                      </span>
+                      <span
+                        className="w-3 h-[2px] bg-[#3F8F6B]"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 py-1">
+                      <ConceptSymbol
+                        conceptId={concept.id}
+                        variant="dark"
+                        size={24}
+                      />
+                      <EdgeNetWordmark dark size="sm" />
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* Restrained Dark Navy Footer Area */}
+          <footer className="bg-[#101E35] text-white px-6 lg:px-10 py-4 border-t border-[#1C2E4B] shrink-0">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+              {/* Presenting Company & Brand Descriptor */}
+              <div className="space-y-0.5 shrink-0">
+                <div className="font-display text-sm font-semibold tracking-tight text-white">
+                  {BRAND_INFO.presentingCompany}
+                </div>
+                <div className="text-xs text-[#B5C4D6]">
+                  {BRAND_INFO.descriptor}
+                </div>
+              </div>
+
+              {/* Compact Brand Color Palette */}
+              <div
+                aria-label="Brand Color System"
+                className="flex flex-wrap items-center gap-4 lg:gap-5"
+              >
+                {BRAND_COLORS.map((swatch) => (
+                  <div key={swatch.hex} className="flex items-center gap-2">
+                    <span
+                      className={`w-5 h-5 rounded-[3px] shrink-0 ${
+                        swatch.hex === "#101E35"
+                          ? "border border-[#303B49]"
+                          : swatch.isLight
+                          ? "border border-[#303B49]/40"
+                          : ""
+                      }`}
+                      style={{ backgroundColor: swatch.hex }}
+                      aria-hidden="true"
+                    />
+                    <div className="leading-tight">
+                      <div className="font-mono text-[11px] text-[#E8EEF4] tabular-nums">
+                        {swatch.hex}
+                      </div>
+                      <div className="text-[10px] text-[#9FB0C4]">
+                        {swatch.name}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Exploration Note */}
+              <div className="text-xs text-[#9FB0C4] lg:text-right shrink-0">
+                {BRAND_INFO.boardNote}
+              </div>
+            </div>
+          </footer>
+        </section>
+      </main>
+
+      {/* Concept Inspection & Vector Download Modal */}
+      <ConceptInspectorModal
+        concept={inspectedConcept}
+        onClose={() => setInspectedConcept(null)}
+        onSendToStudio={handleSendToStudio}
+      />
+
+      {/* Gemini Nano Banana 2.1 Create & Edit Image Studio Modal */}
+      <ImageStudioModal
+        isOpen={studioOpen}
+        onClose={() => setStudioOpen(false)}
+        initialSourceImage={studioInitialSource}
+      />
+    </div>
+  );
+}

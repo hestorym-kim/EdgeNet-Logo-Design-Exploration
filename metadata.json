@@ -1,0 +1,8 @@
+{
+  "name": "EdgeNet — Brand Identity Exploration",
+  "description": "Corporate logo design exploration board for EdgeNet (Distributed Intelligence Infrastructure), presented by UniFrame Launchers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
